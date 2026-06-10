@@ -34,7 +34,7 @@ const navItems: NavItem[] = [
 
 export default function Sidebar() {
   return (
-    <aside className="w-sidebar h-full bg-bg-secondary border-r flex flex-col shrink-0">
+    <aside className="w-sidebar h-full bg-bg-secondary border-r flex-col shrink-0 hidden md:flex">
       <div className="h-header flex items-center px-5 border-b shrink-0">
         <img
           src="/assets/images/underworld-logo.png"

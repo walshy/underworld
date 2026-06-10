@@ -68,7 +68,7 @@ function FaceCard({ card }: { card: GameCard }) {
   const col = red ? '#CC2222' : '#111111'
   const sym = SUIT_SYM[card.suit]
   return (
-    <svg width="120" height="168" viewBox="0 0 60 84" className="block">
+    <svg viewBox="0 0 60 84" className="block w-full">
       <rect width="60" height="84" rx="4" fill="#F8F8F0" stroke="#999" strokeWidth="1" />
       <text x="5" y="15" fontSize="11" fontFamily="'Courier New',monospace" fontWeight="bold" fill={col}>
         {card.rank}
@@ -92,16 +92,14 @@ function CardBack() {
     <img
       src="/assets/images/golden-serpent-card-back.png.png"
       alt="card"
-      width={120}
-      height={168}
-      className="block pixel-art"
+      className="block w-full h-auto pixel-art"
     />
   )
 }
 
 function PlayingCard({ card, faceDown = false }: { card: GameCard; faceDown?: boolean }) {
   return (
-    <div className="inline-block rounded overflow-hidden shadow-lg">
+    <div className="inline-block w-20 md:w-[120px] rounded overflow-hidden shadow-lg">
       {faceDown ? <CardBack /> : <FaceCard card={card} />}
     </div>
   )
@@ -182,7 +180,7 @@ function CasinoLobby({ onEnter }: { onEnter: () => void }) {
       </div>
 
       <Card className="!p-6 border-border-accent">
-        <div className="flex items-center gap-5">
+        <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-5">
           <img
             src="/assets/images/golden-serpent-casino-logo.png"
             alt="The Golden Serpent"
@@ -470,17 +468,15 @@ function BlackjackTable({ onLeave }: { onLeave: () => void }) {
 
       {/* Felt table — two-zone layout, full viewport height */}
       <div
-        className="relative flex flex-col rounded-xl border border-border-accent overflow-hidden bg-felt"
-        style={{ minHeight: 'calc(100vh - 56px)' }}
+        className="relative flex flex-col rounded-xl border border-border-accent overflow-hidden bg-felt min-h-[calc(100vh_-_104px)] md:min-h-[calc(100vh_-_56px)]"
       >
         {/* ── Dealer zone — dark strip ── */}
-        <div className="flex flex-col items-center gap-5 px-8 py-7 bg-dealer-zone">
+        <div className="flex flex-col items-center gap-5 px-4 md:px-8 py-4 md:py-7 bg-dealer-zone">
           <div className="flex flex-col items-center gap-2">
             <img
               src="/assets/images/golden-serpent-dealer-npc.png"
               alt="The Viper's Dealer"
-              className="pixel-art object-contain"
-              style={{ width: '300px', height: 'auto', imageRendering: 'pixelated' }}
+              className="pixel-art object-contain h-auto w-[120px] md:w-[300px]"
             />
             <p className="text-xs font-medium text-secondary">The Viper's Dealer</p>
             {dealerVisible !== null && (
@@ -499,7 +495,7 @@ function BlackjackTable({ onLeave }: { onLeave: () => void }) {
         </div>
 
         {/* ── Player zone — felt green ── */}
-        <div className="flex flex-col flex-1 px-8 pt-6 pb-6">
+        <div className="flex flex-col flex-1 px-4 md:px-8 pt-4 md:pt-6 pb-4 md:pb-6">
 
           {/* Player cards — centred in available space */}
           <div className="flex-1 flex flex-col items-center justify-center gap-3">
@@ -522,9 +518,9 @@ function BlackjackTable({ onLeave }: { onLeave: () => void }) {
           </div>
 
           {/* Controls — anchored to bottom of player zone */}
-          <div className="flex flex-col items-center gap-4">
-            <div className="flex items-center gap-8">
-              <div className="flex gap-3">
+          <div className="flex flex-col items-center gap-4 w-full">
+            <div className="flex items-center justify-center gap-4 md:gap-8 w-full">
+              <div className="flex gap-2 md:gap-3 overflow-x-auto pb-1">
                 {CHIPS.map(({ value, Component }) => (
                   <button
                     key={value}
@@ -535,14 +531,14 @@ function BlackjackTable({ onLeave }: { onLeave: () => void }) {
                         setPendingChips(chips => [...chips, value])
                       }
                     }}
-                    className={`rounded-full transition-transform hover:enabled:scale-110 disabled:opacity-30 disabled:cursor-not-allowed ${pendingChips.includes(value) ? 'ring-2 ring-gold ring-offset-0' : ''}`}
+                    className={`shrink-0 rounded-full transition-transform hover:enabled:scale-110 disabled:opacity-30 disabled:cursor-not-allowed ${pendingChips.includes(value) ? 'ring-2 ring-gold ring-offset-0' : ''}`}
                   >
                     <Component />
                   </button>
                 ))}
               </div>
 
-              <div className="text-center min-w-[72px]">
+              <div className="text-center min-w-[72px] shrink-0">
                 <p className="text-xs uppercase tracking-widest text-secondary mb-1">Bet</p>
                 <button
                   type="button"
@@ -554,26 +550,26 @@ function BlackjackTable({ onLeave }: { onLeave: () => void }) {
                   {$$(gs.phase === 'idle' ? pendingBet : gs.bet)}
                 </button>
                 {gs.phase === 'idle' && pendingChips.length > 0 && (
-                  <p className="text-[10px] text-muted mt-0.5">click to undo</p>
+                  <p className="text-[10px] text-muted mt-0.5">tap to undo</p>
                 )}
               </div>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-2 w-full max-w-sm md:flex-row md:w-auto md:max-w-none md:gap-3">
               {gs.phase === 'idle' && (
-                <Button variant="primary" disabled={pendingBet === 0} onClick={deal}>
+                <Button variant="primary" disabled={pendingBet === 0} onClick={deal} className="w-full md:w-auto">
                   Deal
                 </Button>
               )}
               {gs.phase === 'playing' && (
                 <>
-                  <Button variant="primary" onClick={hit}>Hit</Button>
-                  <Button variant="primary" onClick={stand}>Stand</Button>
+                  <Button variant="primary" onClick={hit} className="w-full md:w-auto">Hit</Button>
+                  <Button variant="primary" onClick={stand} className="w-full md:w-auto">Stand</Button>
                   <Button
                     variant="ghost"
                     disabled={!canDouble}
                     onClick={doubleDown}
-                    className="border border-gold text-gold hover:bg-gold-subtle"
+                    className="w-full md:w-auto border border-gold text-gold hover:bg-gold-subtle"
                   >
                     Double Down
                   </Button>

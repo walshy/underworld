@@ -95,3 +95,16 @@ src/
 - Store actions mutate via `set()`, never return side-effected values from within `set()`
 - Production times in milliseconds, displayed in minutes
 - All currency displayed with `$` prefix and `toLocaleString('en-US')` formatting
+
+## Mobile-First
+
+This project targets mobile as the primary viewport with desktop as an enhancement.
+
+- **Breakpoint**: `md` (768px) is the desktop threshold — mobile styles are the default, desktop overrides use `md:` prefix
+- **Navigation**:
+  - Mobile: bottom tab bar (56px, `h-14`) with 4 primary tabs + "More" slide-up drawer
+  - Desktop: left sidebar (`w-sidebar`, 220px), hidden on mobile via `hidden md:flex`
+- **Header**: 48px (`h-12`) on mobile with 2×2 icon+value grid; 56px (`md:h-header`) on desktop with single stat row
+- **Page content**: `pb-[72px]` on mobile to clear the tab bar; `md:pb-6` on desktop
+- **No inline styles**: use `min-h-[calc(100vh_-_104px)]` Tailwind arbitrary values (underscores = spaces in calc)
+- **Images**: pixel art assets use `.pixel-art` utility class (`image-rendering: pixelated; crisp-edges`)

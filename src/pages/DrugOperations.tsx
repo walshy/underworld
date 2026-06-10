@@ -171,7 +171,7 @@ function ProductPicker({ slotId, playerCash, playerRep, onConfirm, onCancel }: P
           <X size={14} />
         </button>
       </div>
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {DRUGS.map((drug) => (
           <ProductOption
             key={drug.id}
@@ -418,7 +418,7 @@ export default function DrugOperations() {
   const activeCount = slots.filter((s) => s.status !== 'empty').length
 
   return (
-    <div className="flex gap-6">
+    <div className="flex flex-col md:flex-row gap-6">
       <div className="flex-1 min-w-0 space-y-6">
         <section className="space-y-3">
           <div>
@@ -426,7 +426,7 @@ export default function DrugOperations() {
             <p className="text-sm text-muted mt-0.5">{activeCount} / 3 slots active</p>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {slots.map((slot) => (
               <OperationSlot
                 key={slot.id}
@@ -454,7 +454,7 @@ export default function DrugOperations() {
         <InventoryPanel />
       </div>
 
-      <aside className="w-52 shrink-0">
+      <aside className="w-full md:w-52 shrink-0">
         <StatsPanel />
       </aside>
     </div>
