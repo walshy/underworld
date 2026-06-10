@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .pixel-art {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    @apply h-full;
+  }
+
+  body {
+    @apply bg-bg-primary text-primary font-sans;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-bg-secondary;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border-accent rounded;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-border-default;
+  }
+}
