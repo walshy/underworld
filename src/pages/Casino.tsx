@@ -441,9 +441,10 @@ function BlackjackTable({ onLeave }: { onLeave: () => void }) {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="space-y-3">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="flex-1 flex flex-col overflow-hidden">
+
+      {/* Leave table bar */}
+      <div className="shrink-0 flex items-center justify-between h-12 px-4 md:px-6 bg-bg-secondary border-b border-border-default">
         <button
           type="button"
           onClick={onLeave}
@@ -452,8 +453,8 @@ function BlackjackTable({ onLeave }: { onLeave: () => void }) {
           <ArrowLeft size={16} />
           Leave Table
         </button>
-        <p className="text-sm font-semibold text-primary">The Golden Serpent — Blackjack</p>
-        <div className="flex items-center gap-4 text-xs">
+        <p className="text-sm font-semibold text-primary hidden md:block">The Golden Serpent — Blackjack</p>
+        <div className="flex items-center gap-3 md:gap-4 text-xs">
           <span className="text-muted">
             W: <span className="text-success">{gs.sessionWins}</span>
             {' / '}
@@ -462,31 +463,28 @@ function BlackjackTable({ onLeave }: { onLeave: () => void }) {
           <span className={gs.sessionProfit >= 0 ? 'text-gold' : 'text-danger'}>
             {gs.sessionProfit >= 0 ? '+' : '-'}{$$(gs.sessionProfit)}
           </span>
-          <span className="text-muted">Cash: <span className="text-gold font-bold">{$$(cash)}</span></span>
+          <span className="text-muted hidden md:inline">Cash: <span className="text-gold font-bold">{$$(cash)}</span></span>
         </div>
       </div>
 
-      {/* Felt table — two-zone layout, full viewport height */}
-      <div
-        className="relative flex flex-col rounded-xl border border-border-accent overflow-hidden bg-felt min-h-[calc(100vh_-_104px)] md:min-h-[calc(100vh_-_56px)]"
-      >
-        {/* ── Dealer zone — dark strip ── */}
-        <div className="flex flex-col items-center gap-5 px-4 md:px-8 py-4 md:py-7 bg-dealer-zone">
-          <div className="flex flex-col items-center gap-2">
-            <img
-              src="/assets/images/golden-serpent-dealer-npc.png"
-              alt="The Viper's Dealer"
-              className="pixel-art object-contain h-auto w-[120px] md:w-[300px]"
-            />
-            <p className="text-xs font-medium text-secondary">The Viper's Dealer</p>
-            {dealerVisible !== null && (
-              <p className="text-sm font-mono text-primary">
-                {gs.holeHidden
-                  ? `${dealerVisible} + ?`
-                  : `${dealerVisible}${handVal(gs.dealerHand) > 21 ? ' — Bust' : ''}`}
-              </p>
-            )}
-          </div>
+      {/* Felt table — fills remaining height, no scroll */}
+      <div className="flex-1 relative flex flex-col overflow-hidden bg-felt rounded-b-xl border-x border-b border-border-accent">
+
+        {/* ── Dealer zone — top strip ── */}
+        <div className="shrink-0 flex flex-col items-center gap-2 px-4 md:px-8 py-3 md:py-4 bg-dealer-zone">
+          <img
+            src="/assets/images/golden-serpent-dealer-npc.png"
+            alt="The Viper's Dealer"
+            className="pixel-art object-contain max-h-[25vh] w-auto"
+          />
+          <p className="text-sm font-medium text-secondary">The Viper's Dealer</p>
+          {dealerVisible !== null && (
+            <p className="text-sm font-mono text-primary">
+              {gs.holeHidden
+                ? `${dealerVisible} + ?`
+                : `${dealerVisible}${handVal(gs.dealerHand) > 21 ? ' — Bust' : ''}`}
+            </p>
+          )}
           <div className="flex gap-3 flex-wrap justify-center items-center">
             {gs.dealerHand.map((card, i) => (
               <PlayingCard key={i} card={card} faceDown={i === 1 && gs.holeHidden} />
@@ -494,11 +492,11 @@ function BlackjackTable({ onLeave }: { onLeave: () => void }) {
           </div>
         </div>
 
-        {/* ── Player zone — felt green ── */}
-        <div className="flex flex-col flex-1 px-4 md:px-8 pt-4 md:pt-6 pb-4 md:pb-6">
+        {/* ── Player zone — flex-1, space distributed ── */}
+        <div className="flex-1 flex flex-col min-h-0 px-4 md:px-8 pt-3 md:pt-4">
 
           {/* Player cards — centred in available space */}
-          <div className="flex-1 flex flex-col items-center justify-center gap-3">
+          <div className="flex-1 flex flex-col items-center justify-center gap-3 min-h-0">
             {gs.playerHand.length > 0 ? (
               <>
                 <div className="flex gap-3 flex-wrap justify-center">
@@ -517,8 +515,8 @@ function BlackjackTable({ onLeave }: { onLeave: () => void }) {
             )}
           </div>
 
-          {/* Controls — anchored to bottom of player zone */}
-          <div className="flex flex-col items-center gap-4 w-full">
+          {/* Controls — pinned to bottom */}
+          <div className="shrink-0 flex flex-col items-center gap-3 pb-4">
             <div className="flex items-center justify-center gap-4 md:gap-8 w-full">
               <div className="flex gap-2 md:gap-3 overflow-x-auto pb-1">
                 {CHIPS.map(({ value, Component }) => (
@@ -613,7 +611,10 @@ function BlackjackTable({ onLeave }: { onLeave: () => void }) {
 
 export default function Casino() {
   const [view, setView] = useState<'lobby' | 'table'>('lobby')
-  return view === 'lobby'
-    ? <CasinoLobby onEnter={() => setView('table')} />
-    : <BlackjackTable onLeave={() => setView('lobby')} />
+  if (view === 'table') return <BlackjackTable onLeave={() => setView('lobby')} />
+  return (
+    <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 pt-6 pb-[72px] md:pb-6">
+      <CasinoLobby onEnter={() => setView('table')} />
+    </div>
+  )
 }

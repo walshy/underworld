@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(claude config set autoApprove true)",
+      "PowerShell($env:PATH += \";C:\\\\Program Files\\\\Git\\\\bin\"; cd \"C:\\\\Users\\\\joshw\\\\underworld\"; git add -A; git commit -m \"Fix blackjack table: exact viewport height, no scroll, flex layout\"; git push)"
+    ]
+  }
+}

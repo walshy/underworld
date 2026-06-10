@@ -42,8 +42,14 @@ export default function Layout() {
 
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
         <Header />
-        <main className="flex-1 overflow-y-auto overflow-x-hidden px-6 pt-6 pb-[72px] md:pb-6">
-          <Outlet />
+        <main className="flex-1 flex flex-col overflow-hidden min-h-0">
+          {location.pathname === '/casino' ? (
+            <Outlet />
+          ) : (
+            <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 pt-6 pb-[72px] md:pb-6">
+              <Outlet />
+            </div>
+          )}
         </main>
       </div>
 
