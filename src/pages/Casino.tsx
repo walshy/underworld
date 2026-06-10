@@ -280,13 +280,12 @@ function BlackjackTable({ onLeave }: { onLeave: () => void }) {
   // ── Actions ────────────────────────────────────────────────────────────────
 
   function deal() {
-    if (pendingBet === 0 || pendingBet > cash) return
+    if (gs.phase !== 'idle' || pendingBet === 0 || pendingBet > cash) return
     const deck = shuffledDeck()
     const player: GameCard[] = [deck.shift()!, deck.shift()!]
     const dealer: GameCard[] = [deck.shift()!, deck.shift()!]
     const thisBet = pendingBet
 
-    addCash(-thisBet)
     setPendingChips([])
 
     const pBJ = isBlackjack(player)
@@ -296,12 +295,14 @@ function BlackjackTable({ onLeave }: { onLeave: () => void }) {
       let result: GameResult
       let winAmount: number
       if (pBJ && dBJ) {
-        result = 'push'; winAmount = 0; addCash(thisBet)
+        result = 'push'; winAmount = 0
       } else if (pBJ) {
-        result = 'blackjack'; winAmount = Math.floor(thisBet * 1.5); addCash(thisBet + winAmount)
+        result = 'blackjack'; winAmount = Math.floor(thisBet * 1.5)
       } else {
         result = 'lose'; winAmount = -thisBet
       }
+      // Apply cash change and state together so no intermediate broke flash
+      addCash(-thisBet + (result === 'push' ? thisBet : result === 'blackjack' ? thisBet + winAmount : 0))
       setGs(prev => ({
         ...prev, phase: 'result', deck, playerHand: player, dealerHand: dealer,
         holeHidden: false, bet: thisBet, result, winAmount,
@@ -313,10 +314,12 @@ function BlackjackTable({ onLeave }: { onLeave: () => void }) {
       return
     }
 
+    // Set phase to playing BEFORE deducting cash — prevents broke flash on all-in bets
     setGs(prev => ({
       ...prev, phase: 'playing', deck, playerHand: player, dealerHand: dealer,
       holeHidden: true, bet: thisBet, result: null, winAmount: 0,
     }))
+    addCash(-thisBet)
   }
 
   function hit() {

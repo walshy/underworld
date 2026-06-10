@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "PowerShell(claude config set autoApprove true)",
-      "PowerShell($env:PATH += \";C:\\\\Program Files\\\\Git\\\\bin\"; cd \"C:\\\\Users\\\\joshw\\\\underworld\"; git add -A; git commit -m \"Fix blackjack table: exact viewport height, no scroll, flex layout\"; git push)"
+      "PowerShell($env:PATH += \";C:\\\\Program Files\\\\Git\\\\bin\"; cd \"C:\\\\Users\\\\joshw\\\\underworld\"; git add -A; git commit -m \"Fix blackjack table: exact viewport height, no scroll, flex layout\"; git push)",
+      "PowerShell($env:PATH += \";C:\\\\Program Files\\\\Git\\\\bin\"; cd \"C:\\\\Users\\\\joshw\\\\underworld\"; git diff HEAD~1 HEAD -- src/pages/Casino.tsx | Select-String \"^\\\\+\" | Select-Object -First 80)",
+      "PowerShell($env:PATH += \";C:\\\\Program Files\\\\Git\\\\bin\"; cd \"C:\\\\Users\\\\joshw\\\\underworld\"; git diff HEAD~1 HEAD -- src/pages/Casino.tsx 2>&1 | Select-Object -First 200)",
+      "PowerShell($env:PATH += \";C:\\\\Program Files\\\\Git\\\\bin\"; cd \"C:\\\\Users\\\\joshw\\\\underworld\"; git diff HEAD~1 HEAD -- src/components/layout/Layout.tsx 2>&1)",
+      "PowerShell($env:PATH += \";C:\\\\Program Files\\\\Git\\\\bin\"; cd \"C:\\\\Users\\\\joshw\\\\underworld\"; git add -A; git commit -m \"Fix deal\\(\\) race condition: set phase before deducting cash\"; git push)"
     ]
   }
 }
