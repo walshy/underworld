@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Lock, Plus, X, PackageOpen } from 'lucide-react'
+import { Lock, Plus, X, PackageOpen, Package } from 'lucide-react'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import { useDrugStore, type DrugSlot } from '../store/drugStore'
@@ -357,6 +357,64 @@ function InventoryPanel() {
   )
 }
 
+// ─── DrugStockPanel ───────────────────────────────────────────────────────────
+
+const MOCK_STOCK: Array<{ id: DrugId; quantity: number; unitValue: number }> = [
+  { id: 'weed',  quantity: 5, unitValue: 85  },
+  { id: 'pills', quantity: 3, unitValue: 140 },
+]
+
+function DrugStockPanel() {
+  const [distMsg, setDistMsg] = useState<DrugId | null>(null)
+
+  function handleSell(id: DrugId) {
+    setDistMsg(id)
+    setTimeout(() => setDistMsg(null), 2000)
+  }
+
+  return (
+    <Card>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Package size={14} className="text-gold" />
+          <span className="text-sm font-semibold text-primary">Drug Stock</span>
+          <span className="text-xs text-muted">(mock)</span>
+        </div>
+        <span className="text-xs uppercase tracking-widest text-muted">Units</span>
+      </div>
+
+      <div className="divide-y divide-border-default">
+        {MOCK_STOCK.map(({ id, quantity, unitValue }) => {
+          const drug = DRUG_MAP[id]
+          return (
+            <div
+              key={id}
+              className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0"
+            >
+              <div className="flex items-center gap-3">
+                <DrugImage drugId={id} size={32} />
+                <div>
+                  <p className="text-sm text-primary">{drug.name}</p>
+                  <p className="text-xs text-secondary">
+                    {quantity} units · <span className="text-gold">{fmtMoney(quantity * unitValue)}</span> est.
+                  </p>
+                </div>
+              </div>
+              {distMsg === id ? (
+                <span className="text-xs text-secondary">Distribution coming soon</span>
+              ) : (
+                <Button variant="ghost" className="text-xs py-1 px-2" onClick={() => handleSell(id)}>
+                  Sell
+                </Button>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </Card>
+  )
+}
+
 // ─── StatsPanel ───────────────────────────────────────────────────────────────
 
 function StatsPanel() {
@@ -452,6 +510,7 @@ export default function DrugOperations() {
         </section>
 
         <InventoryPanel />
+        <DrugStockPanel />
       </div>
 
       <aside className="w-full md:w-52 shrink-0">

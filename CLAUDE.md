@@ -79,6 +79,55 @@ Tick counter + loading state.
 ### drugStore
 Operation slots (3), inventory, daily stats. See `src/store/drugStore.ts`.
 
+## Database Schema (Planned — Supabase not yet wired)
+
+### drug_inventory
+| Column | Type | Notes |
+|---|---|---|
+| `id` | `uuid` | PK |
+| `player_id` | `uuid` | FK → auth.users |
+| `product` | `text` | `weed` / `pills` / `cocaine` / `meth` |
+| `quantity` | `integer` | Units held |
+| `quality` | `integer` | 0–100 |
+| `created_at` | `timestamptz` | |
+| `expires_at` | `timestamptz` | Nullable; stock degrades if not distributed in time |
+
+### storage_facilities
+| Column | Type | Notes |
+|---|---|---|
+| `id` | `uuid` | PK |
+| `player_id` | `uuid` | FK → auth.users |
+| `type` | `text` | `safehouse` / `lockup` / `warehouse` / `industrial` |
+| `capacity` | `integer` | Max units storable |
+| `current_usage` | `integer` | Units currently stored |
+| `location_district` | `text` | District name |
+
+### districts
+| Column | Type | Notes |
+|---|---|---|
+| `id` | `uuid` | PK |
+| `name` | `text` | District name |
+| `weed_demand` | `integer` | 0–100 demand score |
+| `pills_demand` | `integer` | 0–100 demand score |
+| `cocaine_demand` | `integer` | 0–100 demand score |
+| `meth_demand` | `integer` | 0–100 demand score |
+| `last_updated` | `timestamptz` | Demand fluctuates over time |
+
+### distribution_jobs
+| Column | Type | Notes |
+|---|---|---|
+| `id` | `uuid` | PK |
+| `player_id` | `uuid` | FK → auth.users |
+| `product` | `text` | Drug type being distributed |
+| `quantity` | `integer` | Units dispatched |
+| `method` | `text` | `street` / `local` / `blackmarket` / `smuggling` |
+| `district_id` | `uuid` | FK → districts |
+| `status` | `text` | `pending` / `active` / `complete` / `busted` |
+| `started_at` | `timestamptz` | |
+| `completes_at` | `timestamptz` | |
+| `heat_generated` | `integer` | Heat added on completion |
+| `profit_earned` | `integer` | Dirty money earned |
+
 ## File Structure
 ```
 src/
@@ -95,6 +144,48 @@ src/
 - Store actions mutate via `set()`, never return side-effected values from within `set()`
 - Production times in milliseconds, displayed in minutes
 - All currency displayed with `$` prefix and `toLocaleString('en-US')` formatting
+
+## Drug Economy Architecture
+
+> **Not yet implemented.** Current system produces dirty money directly from operations.
+> This documents the planned inventory-based loop for future implementation.
+
+### Inventory Loop (Planned)
+1. **Produce** — Operation slots produce drug units (not dirty money directly)
+2. **Store** — Units are held in a storage facility until distributed
+3. **Distribute** — Player dispatches a distribution job to a district via a chosen method
+4. **Collect** — On completion, dirty money arrives in the player's wallet
+
+### Storage Facilities
+| Type | Capacity | Notes |
+|---|---|---|
+| Safehouse | 20 units | Starter storage; low heat, low capacity |
+| Lockup | 80 units | Mid-tier; moderate heat risk |
+| Warehouse | 250 units | High capacity; requires territory control |
+| Industrial | 600 units | End-game scale; severe heat if discovered |
+
+### Districts (Six)
+| District | Character | High Demand |
+|---|---|---|
+| East Side | Residential, starter territory | Weed, Pills |
+| The Docks | Industrial, heavy foot traffic | Cocaine, Meth |
+| Midtown | High income, white collar | Cocaine, Pills |
+| The Flats | Low income, high volume | Weed, Meth |
+| Uptown | Luxury, low heat, low volume | Cocaine |
+| Outer Ring | Sprawling suburbs, export route | All (Smuggling only) |
+
+### Distribution Methods
+| Method | Risk | Reward | Time |
+|---|---|---|---|
+| Street | Low | Low | Fast (~5 min) |
+| Local dealer | Medium | Medium | Medium (~20 min) |
+| Black market | High | High | Slow (~60 min) |
+| Smuggling | Very high | Very high | Very slow (~4 hr) |
+
+### Migration Note
+When implemented, operation slots will produce `drug_inventory` units instead of calling
+`addDirtyMoney`. The existing collected-items `InventoryPanel` and `drugStore.inventory`
+will be deprecated in favour of `drug_inventory` rows and the distribution job system.
 
 ## Mobile-First
 
